@@ -3,6 +3,8 @@ import { PointHistory, TransactionType, UserPoint } from "./point.model";
 import { UserPointTable } from "src/database/userpoint.table";
 import { PointHistoryTable } from "src/database/pointhistory.table";
 import { PointBody as PointDto } from "./point.dto";
+import { PointService } from "./point.service";
+import { InvalidIdException } from "src/common/exception/invalid-id.exception";
 
 
 @Controller('/point')
@@ -11,6 +13,7 @@ export class PointController {
     constructor(
         private readonly userDb: UserPointTable,
         private readonly historyDb: PointHistoryTable,
+        private readonly pointService: PointService,
     ) {}
 
     /**
@@ -19,7 +22,10 @@ export class PointController {
     @Get(':id')
     async point(@Param('id') id): Promise<UserPoint> {
         const userId = Number.parseInt(id)
-        return { id: userId, point: 0, updateMillis: Date.now() }
+        if (userId < 0) {
+            throw new InvalidIdException('Invalid user id')
+        }
+        return this.pointService.getUserPoint(userId)
     }
 
     /**
