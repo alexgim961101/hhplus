@@ -22,7 +22,7 @@ export class PointController {
     @Get(':id')
     async point(@Param('id') id): Promise<UserPoint> {
         const userId = Number.parseInt(id)
-        if (userId < 0) {
+        if (isNaN(userId) || userId < 0) {
             throw new InvalidIdException('Invalid user id')
         }
         return this.pointService.getUserPoint(userId)
