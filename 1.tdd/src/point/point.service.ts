@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PointHistoryTable } from "src/database/pointhistory.table";
 import { UserPointTable } from "src/database/userpoint.table";
-import { UserPoint } from "./point.model";
+import { PointHistory, UserPoint } from "./point.model";
 
 @Injectable()
 export class PointService {
@@ -20,6 +20,9 @@ export class PointService {
     /**
      * 특정 유저의 포인트 충전/이용 조회
      */
+    async getUserPointHistory(userId: number): Promise<PointHistory[]> {
+        return this.historyDb.selectAllByUserId(userId)
+    }
 
 
     /**
