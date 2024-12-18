@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { PointHistoryTable } from "src/database/pointhistory.table";
 import { UserPointTable } from "src/database/userpoint.table";
 import { PointHistory, UserPoint } from "./point.model";
@@ -36,4 +36,11 @@ export class PointService {
     /**
      * 특정 유저의 포인트 사용 기능
      */
+    async useUserPoint(userId: number, amount: number): Promise<UserPoint> {
+        const userPoint = await this.userDb.selectById(userId)
+        if (userPoint.point < amount) {
+            throw new BadRequestException('User point is not enough')
+        }
+        return this.userDb.insertOrUpdate(userId, userPoint.point - amount)
+    }
 }

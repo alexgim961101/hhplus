@@ -51,8 +51,6 @@ export class PointController {
         @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST })) id,
         @Body(ValidationPipe) pointDto: PointDto,
     ): Promise<UserPoint> {
-        const userId = Number.parseInt(id)
-        const amount = pointDto.amount
-        return { id: userId, point: amount, updateMillis: Date.now() }
+        return this.pointService.useUserPoint(id, pointDto.amount)
     }
 }
