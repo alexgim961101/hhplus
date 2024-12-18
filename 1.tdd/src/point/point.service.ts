@@ -28,6 +28,10 @@ export class PointService {
     /**
      * 특정 유저의 포인트 충전 기능
      */
+    async chargeUserPoint(userId: number, amount: number): Promise<UserPoint> {
+        const userPoint = await this.userDb.selectById(userId)
+        return this.userDb.insertOrUpdate(userId, userPoint.point + amount)
+    }
 
     /**
      * 특정 유저의 포인트 사용 기능

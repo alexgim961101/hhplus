@@ -40,7 +40,7 @@ export class PointController {
         @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST })) id,
         @Body(ValidationPipe) pointDto: PointDto,
     ): Promise<UserPoint> {
-
+        return this.pointService.chargeUserPoint(id, pointDto.amount)
     }
 
     /**
