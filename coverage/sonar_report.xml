@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="/home/alex/src/hhplus/1.tdd/src/app.controller.spec.ts">
+    <testCase name="AppController root should return &quot;Hello World!&quot;" duration="5"/>
+  </file>
+  <file path="/home/alex/src/hhplus/1.tdd/src/point/spec/point.service.spec.ts">
+    <testCase name="PointService getUserPoint 유저의 포인트를 조회할 수 있다." duration="6"/>
+    <testCase name="PointService getUserPoint 특정 유저의 포인트 충전 및 조회 기능" duration="1"/>
+    <testCase name="PointService chargeUserPoint 특정 유저의 포인트 충전 기능" duration="2"/>
+    <testCase name="PointService chargeUserPoint DB 업데이트 실패시 예외가 발생한다" duration="4"/>
+    <testCase name="PointService useUserPoint 특정 유저의 포인트 사용 기능" duration="1"/>
+    <testCase name="PointService useUserPoint 특정 유저의 포인트가 부족할 경우 예외를 발생시킨다." duration="1"/>
+    <testCase name="PointService useUserPoint DB 업데이트 실패시 예외가 발생한다" duration="1"/>
+  </file>
+  <file path="/home/alex/src/hhplus/1.tdd/src/point/spec/point.controller.spec.ts">
+    <testCase name="PointController point 특정 ID를 넘겨주면 유저의 포인트를 조회할 수 있다." duration="9"/>
+    <testCase name="PointController history 특정 ID를 넘겨주면 유저의 포인트 충전/이용 내역을 조회할 수 있다." duration="1"/>
+    <testCase name="PointController charge 특정 유저의 포인트를 충전할 수 있다." duration="1"/>
+    <testCase name="PointController use 특정 유저의 포인트를 사용할 수 있다." duration="1"/>
+    <testCase name="PointController use 잔액이 부족할 경우 예외가 발생한다" duration="5"/>
+  </file>
+  <file path="/home/alex/src/hhplus/1.tdd/src/point/spec/point.controller.integration.spec.ts">
+    <testCase name="PointController Integration Test 포인트 충전/사용 통합 테스트 포인트 충전 후 조회가 정상적으로 동작해야 한다" duration="705"/>
+    <testCase name="PointController Integration Test 포인트 충전/사용 통합 테스트 포인트 사용 후 히스토리가 정상적으로 조회되어야 한다" duration="944"/>
+    <testCase name="PointController Integration Test 포인트 충전/사용 통합 테스트 잔액이 부족할 경우 사용이 실패해야 한다" duration="528"/>
+    <testCase name="PointController Integration Test 포인트 충전/사용 통합 테스트 잘못된 입력값으로 요청시 적절한 에러가 반환되어야 한다" duration="8"/>
+  </file>
+  <file path="/home/alex/src/hhplus/1.tdd/src/point/spec/point.integration.spec.ts">
+    <testCase name="Point Integration Test 동시성 제어 테스트 동시에 여러 충전 요청이 들어와도 포인트가 정확히 계산되어야 한다" duration="3127"/>
+    <testCase name="Point Integration Test 동시성 제어 테스트 동시에 여러 사용 요청이 들어와도 잔액이 정확히 계산되어야 한다" duration="1639"/>
+    <testCase name="Point Integration Test 동시성 제어 테스트 동시에 여러 사용 요청이 들어올 때 잔액 부족 상황이 정확히 처리되어야 한다" duration="968"/>
+    <testCase name="Point Integration Test 동시성 제어 테스트 대량의 동시 요청이 들어와도 정확히 처리되어야 한다" duration="37717"/>
+  </file>
+</testExecutions>
