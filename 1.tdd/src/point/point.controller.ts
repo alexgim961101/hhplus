@@ -2,9 +2,9 @@ import { Body, Controller, Get, HttpStatus, Param, ParseIntPipe, Patch, Validati
 import { PointHistory, TransactionType, UserPoint } from "./point.model";
 import { UserPointTable } from "src/database/userpoint.table";
 import { PointHistoryTable } from "src/database/pointhistory.table";
-import { PointBody as PointDto } from "./point.dto";
+import { PointDto } from "./point.dto";
 import { PointService } from "./point.service";
-import { InvalidIdException } from "src/common/exception/invalid-id.exception";
+import { PositiveNumberPipe } from "src/common/pipe/positive-number.pipe";
 
 
 @Controller('/point')
@@ -20,7 +20,7 @@ export class PointController {
      * TODO - 특정 유저의 포인트를 조회하는 기능을 작성해주세요.
      */
     @Get(':id')
-    async point(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST })) id): Promise<UserPoint> {
+    async point(@Param('id', PositiveNumberPipe) id: number): Promise<UserPoint> {
         return this.pointService.getUserPoint(id)
     }
 
@@ -28,7 +28,7 @@ export class PointController {
      * TODO - 특정 유저의 포인트 충전/이용 내역을 조회하는 기능을 작성해주세요.
      */
     @Get(':id/histories')
-    async history(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST })) id): Promise<PointHistory[]> {
+    async history(@Param('id', PositiveNumberPipe) id: number): Promise<PointHistory[]> {
         return this.pointService.getUserPointHistory(id)
     }
 
@@ -37,7 +37,7 @@ export class PointController {
      */
     @Patch(':id/charge')
     async charge(
-        @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST })) id,
+        @Param('id', PositiveNumberPipe) id: number,
         @Body(ValidationPipe) pointDto: PointDto,
     ): Promise<UserPoint> {
         return this.pointService.chargeUserPoint(id, pointDto.amount)
@@ -48,7 +48,7 @@ export class PointController {
      */
     @Patch(':id/use')
     async use(
-        @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST })) id,
+        @Param('id', PositiveNumberPipe) id: number,
         @Body(ValidationPipe) pointDto: PointDto,
     ): Promise<UserPoint> {
         return this.pointService.useUserPoint(id, pointDto.amount)
