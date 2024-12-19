@@ -1,8 +1,8 @@
-import { IsInt, IsPositive, Min } from "class-validator";
+import { IsInt, IsPositive, Max, Min } from "class-validator";
 
-export class PointBody {
+export class PointDto {
     @IsInt()
     @IsPositive()
-    @Min(0)
+    @Max(Number.MAX_SAFE_INTEGER)
     amount: number
 }   

@@ -12,7 +12,10 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggingInterceptor())
 
   app.useGlobalPipes(new ValidationPipe({
-    transform: true
+    transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    validateCustomDecorators: true
   }))
 
   await app.listen(3000);
