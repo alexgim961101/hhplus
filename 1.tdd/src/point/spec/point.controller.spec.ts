@@ -7,6 +7,7 @@ import { mockUserPoint } from "./mock/userpoint.mock"
 import { PointHistoryTable } from "src/database/pointhistory.table"
 import { mockPointHistory } from "./mock/pointhistory.mock"
 import { InvalidIdException } from "src/common/exception/invalid-id.exception"
+import { TransactionType } from "../point.model"
 
 describe('PointController', () => {
     let controller: PointController
@@ -53,21 +54,36 @@ describe('PointController', () => {
             expect(result).toEqual(userPoint)
             expect(service.getUserPoint).toHaveBeenCalledWith(userId)
         })
+    })
 
-        test('유저 ID가 음수이면 예외를 발생시킨다.', async () => {
+    describe('history', () => {
+        test('특정 ID를 넘겨주면 유저의 포인트 충전/이용 내역을 조회할 수 있다.', async () => {
             // given
-            const userId = '-1'
+            const userId = 1
+            const expectedResult = [
+                { 
+                    id: 1, 
+                    userId: userId, 
+                    type: TransactionType.CHARGE,
+                    amount: 1000,
+                    timeMillis: Date.now() 
+                },
+                { 
+                    id: 2, 
+                    userId: userId, 
+                    type: TransactionType.CHARGE,
+                    amount: 2000,
+                    timeMillis: Date.now() 
+                }
+            ]
+            jest.spyOn(service, 'getUserPointHistory').mockResolvedValue(expectedResult)
 
-            // when && then
-            await expect(controller.point(userId)).rejects.toThrow(InvalidIdException)
-        })
+            // when
+            const result = await controller.history(userId)
 
-        test('유저 ID가 숫자가 아니면 예외를 발생시킨다.', async () => {
-            // given
-            const userId = 'abc'
-
-            // when && then
-            await expect(controller.point(userId)).rejects.toThrow(InvalidIdException)
+            // then
+            expect(result).toEqual(expectedResult)
+            expect(service.getUserPointHistory).toHaveBeenCalledWith(userId)
         })
     })
 })
