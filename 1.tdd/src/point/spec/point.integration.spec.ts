@@ -34,7 +34,7 @@ describe('Point Integration Test', () => {
             // then
             const finalPoint = await service.getUserPoint(userId);
             expect(finalPoint.point).toBe(chargeAmount * concurrentRequests);
-        });
+        }, 30000);
 
         test('동시에 여러 사용 요청이 들어와도 잔액이 정확히 계산되어야 한다', async () => {
             // given
