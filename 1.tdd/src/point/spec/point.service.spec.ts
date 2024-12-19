@@ -82,6 +82,19 @@ describe('PointService', () => {
             expect(mockUserPoint.selectById).toHaveBeenCalledWith(userId)
             expect(mockUserPoint.insertOrUpdate).toHaveBeenCalledWith(userId, amount)
         })
+
+        test('DB 업데이트 실패시 예외가 발생한다', async () => {
+            // given
+            const userId = 1;
+            const amount = 1000;
+            jest.spyOn(mockUserPoint, 'selectById').mockResolvedValue({ id: userId, point: 0, updateMillis: Date.now() });
+            jest.spyOn(mockUserPoint, 'insertOrUpdate').mockRejectedValue(new Error('DB Error'));
+
+            // when & then
+            await expect(service.chargeUserPoint(userId, amount))
+                .rejects
+                .toThrow('DB Error');
+        });
     })
 
     describe('useUserPoint', () => {
@@ -113,5 +126,18 @@ describe('PointService', () => {
             await expect(service.useUserPoint(userId, amount)).rejects.toThrow(BadRequestException)
             expect(mockUserPoint.selectById).toHaveBeenCalledWith(userId)
         })
+
+        test('DB 업데이트 실패시 예외가 발생한다', async () => {
+            // given
+            const userId = 1;
+            const amount = 1000;
+            jest.spyOn(mockUserPoint, 'selectById').mockResolvedValue({ id: userId, point: 2000, updateMillis: Date.now() });
+            jest.spyOn(mockUserPoint, 'insertOrUpdate').mockRejectedValue(new Error('DB Error'));
+
+            // when & then
+            await expect(service.useUserPoint(userId, amount))
+                .rejects
+                .toThrow('DB Error');
+        });
     })
 })
