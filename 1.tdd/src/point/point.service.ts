@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PointHistoryTable } from "src/database/pointhistory.table";
 import { UserPointTable } from "src/database/userpoint.table";
-import { PointHistory, UserPoint } from "./point.model";
+import { PointHistory, TransactionType, UserPoint } from "./point.model";
 import WithMutex from "src/common/decorator/mutex.decorator";
 
 @Injectable()
@@ -32,7 +32,9 @@ export class PointService {
     @WithMutex()
     async chargeUserPoint(userId: number, amount: number): Promise<UserPoint> {
         const userPoint = await this.userDb.selectById(userId)
-        return this.userDb.insertOrUpdate(userId, userPoint.point + amount)
+        const updatedPoint = await this.userDb.insertOrUpdate(userId, userPoint.point + amount)
+        await this.historyDb.insert(userId, amount, TransactionType.CHARGE, Date.now())
+        return updatedPoint
     }
 
     /**
@@ -44,6 +46,8 @@ export class PointService {
         if (userPoint.point < amount) {
             throw new BadRequestException('User point is not enough')
         }
-        return this.userDb.insertOrUpdate(userId, userPoint.point - amount)
+        const updatedPoint = await this.userDb.insertOrUpdate(userId, userPoint.point - amount)
+        await this.historyDb.insert(userId, amount, TransactionType.USE, Date.now())
+        return updatedPoint
     }
 }
