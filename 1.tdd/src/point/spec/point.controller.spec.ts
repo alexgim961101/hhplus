@@ -8,6 +8,7 @@ import { PointHistoryTable } from "src/database/pointhistory.table"
 import { mockPointHistory } from "./mock/pointhistory.mock"
 import { InvalidIdException } from "src/common/exception/invalid-id.exception"
 import { TransactionType } from "../point.model"
+import { BadRequestException } from "@nestjs/common"
 
 describe('PointController', () => {
     let controller: PointController
@@ -86,4 +87,58 @@ describe('PointController', () => {
             expect(service.getUserPointHistory).toHaveBeenCalledWith(userId)
         })
     })
+
+    describe('charge', () => {
+        test('특정 유저의 포인트를 충전할 수 있다.', async () => {
+            // given
+            const userId = 1;
+            const pointDto = { amount: 1000 };
+            const expectedUserPoint = { 
+                id: userId, 
+                point: pointDto.amount, 
+                updateMillis: Date.now() 
+            };
+            jest.spyOn(service, 'chargeUserPoint').mockResolvedValue(expectedUserPoint);
+
+            // when
+            const result = await controller.charge(userId, pointDto);
+
+            // then
+            expect(result).toEqual(expectedUserPoint);
+            expect(service.chargeUserPoint).toHaveBeenCalledWith(userId, pointDto.amount);
+        });
+    });
+
+    describe('use', () => {
+        test('특정 유저의 포인트를 사용할 수 있다.', async () => {
+            // given
+            const userId = 1;
+            const pointDto = { amount: 1000 };
+            const expectedUserPoint = { 
+                id: userId, 
+                point: 0, 
+                updateMillis: Date.now() 
+            };
+            jest.spyOn(service, 'useUserPoint').mockResolvedValue(expectedUserPoint);
+
+            // when
+            const result = await controller.use(userId, pointDto);
+
+            // then
+            expect(result).toEqual(expectedUserPoint);
+            expect(service.useUserPoint).toHaveBeenCalledWith(userId, pointDto.amount);
+        });
+
+        test('잔액이 부족할 경우 예외가 발생한다', async () => {
+            // given
+            const userId = 1;
+            const pointDto = { amount: 1000 };
+            jest.spyOn(service, 'useUserPoint').mockRejectedValue(new BadRequestException('User point is not enough'));
+
+            // when & then
+            await expect(controller.use(userId, pointDto))
+                .rejects
+                .toThrow(BadRequestException);
+        });
+    });
 })
