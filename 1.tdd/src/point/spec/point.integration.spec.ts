@@ -1,7 +1,7 @@
-import { UserPointTable } from "src/database/userpoint.table";
-import { PointService } from "../point.service";
-import { Test, TestingModule } from "@nestjs/testing";
-import { DatabaseModule } from "src/database/database.module";
+import { UserPointTable } from 'src/database/userpoint.table';
+import { PointService } from '../point.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { DatabaseModule } from 'src/database/database.module';
 
 describe('Point Integration Test', () => {
     let service: PointService;
@@ -28,7 +28,7 @@ describe('Point Integration Test', () => {
             const promises = Array(concurrentRequests)
                 .fill(null)
                 .map(() => service.chargeUserPoint(userId, chargeAmount));
-            
+
             await Promise.all(promises);
 
             // then
@@ -49,12 +49,12 @@ describe('Point Integration Test', () => {
             const promises = Array(concurrentRequests)
                 .fill(null)
                 .map(() => service.useUserPoint(userId, useAmount));
-            
+
             await Promise.all(promises);
 
             // then
             const finalPoint = await service.getUserPoint(userId);
-            expect(finalPoint.point).toBe(initialAmount - (useAmount * concurrentRequests));
+            expect(finalPoint.point).toBe(initialAmount - useAmount * concurrentRequests);
         });
 
         test('동시에 여러 사용 요청이 들어올 때 잔액 부족 상황이 정확히 처리되어야 한다', async () => {
@@ -62,17 +62,17 @@ describe('Point Integration Test', () => {
             const userId = 1;
             const initialAmount = 1500;
             const useAmount = 1000;
-            
+
             await service.chargeUserPoint(userId, initialAmount);
-            
+
             // when & then
             const promises = [
                 service.useUserPoint(userId, useAmount),
-                service.useUserPoint(userId, useAmount)
+                service.useUserPoint(userId, useAmount),
             ];
-            
+
             await expect(Promise.all(promises)).rejects.toThrow('User point is not enough');
-            
+
             const finalPoint = await service.getUserPoint(userId);
             expect(finalPoint.point).toBeLessThanOrEqual(initialAmount);
             expect(finalPoint.point).toBeGreaterThanOrEqual(initialAmount - useAmount);
@@ -85,23 +85,25 @@ describe('Point Integration Test', () => {
             const chargeAmount = 1000;
             const useAmount = 300;
             const concurrentRequests = 50;
-            
+
             await service.chargeUserPoint(userId, initialAmount);
-            
+
             // when
             const chargePromises = Array(concurrentRequests)
                 .fill(null)
                 .map(() => service.chargeUserPoint(userId, chargeAmount));
-            
+
             const usePromises = Array(concurrentRequests)
                 .fill(null)
                 .map(() => service.useUserPoint(userId, useAmount));
-            
+
             await Promise.all([...chargePromises, ...usePromises]);
-            
+
             // then
             const finalPoint = await service.getUserPoint(userId);
-            expect(finalPoint.point).toBe(initialAmount + (chargeAmount * concurrentRequests) - (useAmount * concurrentRequests));
+            expect(finalPoint.point).toBe(
+                initialAmount + chargeAmount * concurrentRequests - useAmount * concurrentRequests,
+            );
         }, 60000);
     });
 });

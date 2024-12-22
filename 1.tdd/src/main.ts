@@ -5,19 +5,21 @@ import { LoggingInterceptor } from './common/interceptor/logging.interceptor';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule);
 
-  app.useGlobalFilters(new GlobalExceptionFilter())
+    app.useGlobalFilters(new GlobalExceptionFilter());
 
-  app.useGlobalInterceptors(new LoggingInterceptor())
+    app.useGlobalInterceptors(new LoggingInterceptor());
 
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    validateCustomDecorators: true
-  }))
+    app.useGlobalPipes(
+        new ValidationPipe({
+            transform: true,
+            whitelist: true,
+            forbidNonWhitelisted: true,
+            validateCustomDecorators: true,
+        }),
+    );
 
-  await app.listen(3000);
+    await app.listen(3000);
 }
 bootstrap();

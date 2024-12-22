@@ -1,18 +1,18 @@
-import { Test, TestingModule } from "@nestjs/testing"
-import { PointController } from "../point.controller"
-import { PointService } from "../point.service"
-import { mockPointService } from "./mock/point.service.mock"
-import { UserPointTable } from "src/database/userpoint.table"
-import { mockUserPoint } from "./mock/userpoint.mock"
-import { PointHistoryTable } from "src/database/pointhistory.table"
-import { mockPointHistory } from "./mock/pointhistory.mock"
-import { InvalidIdException } from "src/common/exception/invalid-id.exception"
-import { TransactionType } from "../point.model"
-import { BadRequestException } from "@nestjs/common"
+import { Test, TestingModule } from '@nestjs/testing';
+import { PointController } from '../point.controller';
+import { PointService } from '../point.service';
+import { mockPointService } from './mock/point.service.mock';
+import { UserPointTable } from 'src/database/userpoint.table';
+import { mockUserPoint } from './mock/userpoint.mock';
+import { PointHistoryTable } from 'src/database/pointhistory.table';
+import { mockPointHistory } from './mock/pointhistory.mock';
+import { InvalidIdException } from 'src/common/exception/invalid-id.exception';
+import { TransactionType } from '../point.model';
+import { BadRequestException } from '@nestjs/common';
 
 describe('PointController', () => {
-    let controller: PointController
-    let service: PointService
+    let controller: PointController;
+    let service: PointService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -20,83 +20,83 @@ describe('PointController', () => {
             providers: [
                 {
                     provide: PointService,
-                    useValue: mockPointService
+                    useValue: mockPointService,
                 },
                 {
                     provide: UserPointTable,
-                    useValue: mockUserPoint
+                    useValue: mockUserPoint,
                 },
                 {
                     provide: PointHistoryTable,
-                    useValue: mockPointHistory
-                }   
-            ]
-        }).compile()
+                    useValue: mockPointHistory,
+                },
+            ],
+        }).compile();
 
-        controller = module.get<PointController>(PointController)
-        service = module.get<PointService>(PointService)
-    })
+        controller = module.get<PointController>(PointController);
+        service = module.get<PointService>(PointService);
+    });
 
     afterEach(() => {
-        jest.clearAllMocks()
-    })
+        jest.clearAllMocks();
+    });
 
     describe('point', () => {
         test('특정 ID를 넘겨주면 유저의 포인트를 조회할 수 있다.', async () => {
             // given
-            const userId = 1
-            const userPoint = { id: userId, point: 1000, updateMillis: Date.now() }
-            jest.spyOn(service, 'getUserPoint').mockResolvedValue(userPoint)
+            const userId = 1;
+            const userPoint = { id: userId, point: 1000, updateMillis: Date.now() };
+            jest.spyOn(service, 'getUserPoint').mockResolvedValue(userPoint);
 
             // when
-            const result = await controller.point(userId)
+            const result = await controller.point(userId);
 
             // then
-            expect(result).toEqual(userPoint)
-            expect(service.getUserPoint).toHaveBeenCalledWith(userId)
-        })
-    })
+            expect(result).toEqual(userPoint);
+            expect(service.getUserPoint).toHaveBeenCalledWith(userId);
+        });
+    });
 
     describe('history', () => {
         test('특정 ID를 넘겨주면 유저의 포인트 충전/이용 내역을 조회할 수 있다.', async () => {
             // given
-            const userId = 1
+            const userId = 1;
             const expectedResult = [
-                { 
-                    id: 1, 
-                    userId: userId, 
+                {
+                    id: 1,
+                    userId: userId,
                     type: TransactionType.CHARGE,
                     amount: 1000,
-                    timeMillis: Date.now() 
+                    timeMillis: Date.now(),
                 },
-                { 
-                    id: 2, 
-                    userId: userId, 
+                {
+                    id: 2,
+                    userId: userId,
                     type: TransactionType.CHARGE,
                     amount: 2000,
-                    timeMillis: Date.now() 
-                }
-            ]
-            jest.spyOn(service, 'getUserPointHistory').mockResolvedValue(expectedResult)
+                    timeMillis: Date.now(),
+                },
+            ];
+            jest.spyOn(service, 'getUserPointHistory').mockResolvedValue(expectedResult);
 
             // when
-            const result = await controller.history(userId)
+            const result = await controller.history(userId);
 
             // then
-            expect(result).toEqual(expectedResult)
-            expect(service.getUserPointHistory).toHaveBeenCalledWith(userId)
-        })
-    })
+            expect(result).toEqual(expectedResult);
+            expect(service.getUserPointHistory).toHaveBeenCalledWith(userId);
+        });
+    });
 
     describe('charge', () => {
         test('특정 유저의 포인트를 충전할 수 있다.', async () => {
             // given
             const userId = 1;
             const pointDto = { amount: 1000 };
-            const expectedUserPoint = { 
-                id: userId, 
-                point: pointDto.amount, 
-                updateMillis: Date.now() 
+            const expectedUserPoint = {
+                id: userId,
+                point: pointDto.amount,
+                updateMillis: Date.now(),
             };
             jest.spyOn(service, 'chargeUserPoint').mockResolvedValue(expectedUserPoint);
 
@@ -114,10 +114,10 @@ describe('PointController', () => {
             // given
             const userId = 1;
             const pointDto = { amount: 1000 };
-            const expectedUserPoint = { 
-                id: userId, 
-                point: 0, 
-                updateMillis: Date.now() 
+            const expectedUserPoint = {
+                id: userId,
+                point: 0,
+                updateMillis: Date.now(),
             };
             jest.spyOn(service, 'useUserPoint').mockResolvedValue(expectedUserPoint);
 
@@ -133,12 +133,12 @@ describe('PointController', () => {
             // given
             const userId = 1;
             const pointDto = { amount: 1000 };
-            jest.spyOn(service, 'useUserPoint').mockRejectedValue(new BadRequestException('User point is not enough'));
+            jest.spyOn(service, 'useUserPoint').mockRejectedValue(
+                new BadRequestException('User point is not enough'),
+            );
 
             // when & then
-            await expect(controller.use(userId, pointDto))
-                .rejects
-                .toThrow(BadRequestException);
+            await expect(controller.use(userId, pointDto)).rejects.toThrow(BadRequestException);
         });
     });
-})
+});
