@@ -3,4 +3,4 @@ export const mockPointService = {
     getUserPointHistory: jest.fn(),
     chargeUserPoint: jest.fn(),
     useUserPoint: jest.fn(),
-}
+};

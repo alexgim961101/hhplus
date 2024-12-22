@@ -1,15 +1,13 @@
-import { Body, Controller, Get, HttpStatus, Param, ParseIntPipe, Patch, ValidationPipe } from "@nestjs/common";
-import { PointHistory, TransactionType, UserPoint } from "./point.model";
-import { UserPointTable } from "src/database/userpoint.table";
-import { PointHistoryTable } from "src/database/pointhistory.table";
-import { PointDto } from "./point.dto";
-import { PointService } from "./point.service";
-import { PositiveNumberPipe } from "src/common/pipe/positive-number.pipe";
-
+import { Body, Controller, Get, Param, Patch, ValidationPipe } from '@nestjs/common';
+import { PointHistory, UserPoint } from './point.model';
+import { UserPointTable } from 'src/database/userpoint.table';
+import { PointHistoryTable } from 'src/database/pointhistory.table';
+import { PointDto } from './point.dto';
+import { PointService } from './point.service';
+import { PositiveNumberPipe } from 'src/common/pipe/positive-number.pipe';
 
 @Controller('/point')
 export class PointController {
-
     constructor(
         private readonly userDb: UserPointTable,
         private readonly historyDb: PointHistoryTable,
@@ -21,7 +19,7 @@ export class PointController {
      */
     @Get(':id')
     async point(@Param('id', PositiveNumberPipe) id: number): Promise<UserPoint> {
-        return this.pointService.getUserPoint(id)
+        return this.pointService.getUserPoint(id);
     }
 
     /**
@@ -29,7 +27,7 @@ export class PointController {
      */
     @Get(':id/histories')
     async history(@Param('id', PositiveNumberPipe) id: number): Promise<PointHistory[]> {
-        return this.pointService.getUserPointHistory(id)
+        return this.pointService.getUserPointHistory(id);
     }
 
     /**
@@ -40,7 +38,7 @@ export class PointController {
         @Param('id', PositiveNumberPipe) id: number,
         @Body(ValidationPipe) pointDto: PointDto,
     ): Promise<UserPoint> {
-        return this.pointService.chargeUserPoint(id, pointDto.amount)
+        return this.pointService.chargeUserPoint(id, pointDto.amount);
     }
 
     /**
@@ -51,6 +49,6 @@ export class PointController {
         @Param('id', PositiveNumberPipe) id: number,
         @Body(ValidationPipe) pointDto: PointDto,
     ): Promise<UserPoint> {
-        return this.pointService.useUserPoint(id, pointDto.amount)
+        return this.pointService.useUserPoint(id, pointDto.amount);
     }
 }

@@ -1,8 +1,8 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { PointController } from "../point.controller";
-import { DatabaseModule } from "src/database/database.module";
-import { PointService } from "../point.service";
-import { HttpStatus, INestApplication, ValidationPipe } from "@nestjs/common";
+import { Test, TestingModule } from '@nestjs/testing';
+import { PointController } from '../point.controller';
+import { DatabaseModule } from 'src/database/database.module';
+import { PointService } from '../point.service';
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 
 describe('PointController Integration Test', () => {
@@ -40,8 +40,7 @@ describe('PointController Integration Test', () => {
                 .patch(`/point/${userId}/charge`)
                 .send({ amount });
 
-            const pointResponse = await request(app.getHttpServer())
-                .get(`/point/${userId}`);
+            const pointResponse = await request(app.getHttpServer()).get(`/point/${userId}`);
 
             // then
             expect(chargeResponse.status).toBe(HttpStatus.OK);
@@ -64,8 +63,9 @@ describe('PointController Integration Test', () => {
                 .patch(`/point/${userId}/use`)
                 .send({ amount: useAmount });
 
-            const historyResponse = await request(app.getHttpServer())
-                .get(`/point/${userId}/histories`);
+            const historyResponse = await request(app.getHttpServer()).get(
+                `/point/${userId}/histories`,
+            );
 
             // then
             expect(historyResponse.status).toBe(HttpStatus.OK);
@@ -103,12 +103,11 @@ describe('PointController Integration Test', () => {
                 .patch(`/point/${userId}/charge`)
                 .send({ amount: invalidAmount });
 
-            const invalidUserResponse = await request(app.getHttpServer())
-                .get(`/point/-1`);
+            const invalidUserResponse = await request(app.getHttpServer()).get(`/point/-1`);
 
             // then
             expect(chargeResponse.status).toBe(HttpStatus.BAD_REQUEST);
             expect(invalidUserResponse.status).toBe(HttpStatus.BAD_REQUEST);
         });
     });
-}); 
+});
