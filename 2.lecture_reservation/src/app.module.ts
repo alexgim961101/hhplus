@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './common/interceptor/logging.interceptor';
 import { GlobalExceptionFilter } from './common/filter/global-exception.filter';
+import { LectureModule } from './modules/lecture/lecture.module';
 
 @Module({
-    imports: [],
+    imports: [LectureModule],
     controllers: [],
     providers: [
         {

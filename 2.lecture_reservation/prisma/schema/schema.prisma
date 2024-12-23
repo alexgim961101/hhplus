@@ -1,0 +1,62 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder", "omitApi"]
+}
+
+model Lecture {
+  id BigInt @id @default(autoincrement())
+
+  instructorId BigInt
+  instructor User @relation(fields: [instructorId], references: [id])
+
+  title String
+
+  maxAttendees Int @default(30)
+  currentAttendees Int @default(0)
+
+  reservations Reservation[]
+
+  dateTime DateTime
+  applicationStart DateTime
+  applicationEnd DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("lectures")
+}
+
+model Reservation {
+  id BigInt @id @default(autoincrement())
+
+  lectureId BigInt
+  lecture Lecture @relation(fields: [lectureId], references: [id])
+
+  userId BigInt
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@map("reservations")
+}
+
+enum UserRole {
+  INSTRUCTOR
+  STUDENT
+}
+
+model User {
+  id BigInt @id @default(autoincrement())
+
+  lectures Lecture[]
+
+  reservations Reservation[]
+
+  role UserRole
+
+  @@map("users")
+}
