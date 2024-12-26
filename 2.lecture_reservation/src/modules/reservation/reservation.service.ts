@@ -6,6 +6,7 @@ import { Reservation } from "@prisma/client";
 export class ReservationService {
     constructor(@Inject(RESERVATION_REPOSITORY) private readonly reservationRepository: IReservationRepository) {}
 
+
     async getReservationsByUserId(userId: number): Promise<Reservation[]> {
         return this.reservationRepository.findByUserId(userId);
     }
