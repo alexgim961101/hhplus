@@ -12,12 +12,12 @@ model Lecture {
   id BigInt @id @default(autoincrement())
 
   instructorId BigInt
-  instructor User @relation(fields: [instructorId], references: [id])
 
   title String
 
   maxAttendees Int @default(30)
   currentAttendees Int @default(0)
+  isAvailable Boolean @default(true)
 
   reservations Reservation[]
 
@@ -37,26 +37,8 @@ model Reservation {
   lecture Lecture @relation(fields: [lectureId], references: [id])
 
   userId BigInt
-  user User @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
 
   @@map("reservations")
-}
-
-enum UserRole {
-  INSTRUCTOR
-  STUDENT
-}
-
-model User {
-  id BigInt @id @default(autoincrement())
-
-  lectures Lecture[]
-
-  reservations Reservation[]
-
-  role UserRole
-
-  @@map("users")
 }
