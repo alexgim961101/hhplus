@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   lecture-reservation-api:
     container_name: lecture-reservation-api
@@ -22,13 +20,13 @@ services:
   mysql:
     image: mysql:8.0
     container_name: lecture-reservation-mysql
-    ports:
-      - "${MYSQL_PORT}:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_PORT}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     command:
@@ -36,6 +34,19 @@ services:
       - --collation-server=utf8mb4_unicode_ci
     networks:
       - lecture_network
+  
+  test-db:
+    image: mysql:8.0
+    container_name: test-db
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+      MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
 
 volumes:
   mysql_data:
