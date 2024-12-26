@@ -1,7 +1,7 @@
-import { Controller, Get, HttpStatus, Param, ParseIntPipe } from "@nestjs/common";
-import { ReservationService } from "./reservation.service";
-import { BaseResponseDto } from "../../common/dto/base-response.dto";
-import { PositiveIntPipe } from "../../common/pipe/positive-int.pipe";
+import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
+import { ReservationService } from './reservation.service';
+import { BaseResponseDto } from '../../common/dto/base-response.dto';
+import { PositiveIntPipe } from '../../common/pipe/positive-int.pipe';
 
 @Controller('reservation')
 export class ReservationController {
@@ -14,7 +14,9 @@ export class ReservationController {
      */
     @Get(':userId')
     async getReservationList(@Param('userId', PositiveIntPipe) userId: number) {
-        return new BaseResponseDto(await this.reservationService.getReservationsByUserId(userId), HttpStatus.OK.toString());
+        return new BaseResponseDto(
+            await this.reservationService.getReservationsByUserId(userId),
+            HttpStatus.OK.toString(),
+        );
     }
-
-}   
+}

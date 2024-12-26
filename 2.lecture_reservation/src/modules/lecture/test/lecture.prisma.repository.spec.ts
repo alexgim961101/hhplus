@@ -9,12 +9,8 @@ describe('LecturePrismaRepository', () => {
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [
-                LecturePrismaRepository,
-                PrismaService,
-            ],
-        })
-        .compile();
+            providers: [LecturePrismaRepository, PrismaService],
+        }).compile();
 
         repository = module.get<LecturePrismaRepository>(LecturePrismaRepository);
         prismaService = module.get<PrismaService>(PrismaService);
@@ -33,7 +29,7 @@ describe('LecturePrismaRepository', () => {
                     instructorId: 1n,
                     title: 'Past Lecture',
                     applicationStart: new Date(mockDate.getTime() - 1000 * 60 * 60 * 2), // 2시간 전
-                    applicationEnd: new Date(mockDate.getTime() - 1000 * 60 * 60),      // 1시간 전
+                    applicationEnd: new Date(mockDate.getTime() - 1000 * 60 * 60), // 1시간 전
                     dateTime: new Date(mockDate.getTime() + 1000 * 60 * 60 * 24),
                     isAvailable: true,
                 },
@@ -41,11 +37,11 @@ describe('LecturePrismaRepository', () => {
                     instructorId: 2n,
                     title: 'Now Lecture',
                     applicationStart: new Date(mockDate.getTime() - 1000 * 60 * 60 * 2), // 2시간 전
-                    applicationEnd: new Date(mockDate.getTime() + 1000 * 60 * 60),      // 1시간 전
+                    applicationEnd: new Date(mockDate.getTime() + 1000 * 60 * 60), // 1시간 전
                     dateTime: new Date(mockDate.getTime() + 1000 * 60 * 60 * 24 * 2),
                     isAvailable: true,
                 },
-            ]
+            ];
 
             await prismaService.lecture.createMany({
                 data: lectures,
@@ -58,8 +54,6 @@ describe('LecturePrismaRepository', () => {
             expect(result).toMatchObject([lectures[1]]);
         });
 
-        it('', async () => {
-            
-        })
+        it('', async () => {});
     });
 });

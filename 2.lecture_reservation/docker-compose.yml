@@ -1,56 +1,49 @@
 services:
-  lecture-reservation-api:
-    container_name: lecture-reservation-api
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "${API_PORT}:3000"
-    environment:
-      - MYSQL_HOST=${MYSQL_HOST}
-      - MYSQL_PORT=${MYSQL_PORT}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-    depends_on:
-      - mysql
-    networks:
-      - lecture_network
+    lecture-reservation-api:
+        container_name: lecture-reservation-api
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - '${API_PORT}:3000'
+        environment:
+            - MYSQL_HOST=${MYSQL_HOST}
+            - MYSQL_PORT=${MYSQL_PORT}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+        depends_on:
+            - mysql
 
-  mysql:
-    image: mysql:8.0
-    container_name: lecture-reservation-mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    ports:
-      - "${MYSQL_PORT}:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-    networks:
-      - lecture_network
-  
-  test-db:
-    image: mysql:8.0
-    container_name: test-db
-    ports:
-      - "3307:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: test
-      MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
+    mysql:
+        image: mysql:8.0
+        container_name: lecture-reservation-mysql
+        ports:
+            - '3306:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: test
+            MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
+        command:
+            - --character-set-server=utf8mb4
+            - --collation-server=utf8mb4_unicode_ci
+
+    test-db:
+        image: mysql:8.0
+        container_name: test-db
+        ports:
+            - '3307:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: test
+            MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
+        command:
+            - --character-set-server=utf8mb4
+            - --collation-server=utf8mb4_unicode_ci
 
 volumes:
-  mysql_data:
+    mysql_data:
 
 networks:
-  lecture_network:
-    driver: bridge
+    lecture_network:
+        driver: bridge

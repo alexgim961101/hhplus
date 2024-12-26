@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, ParseIntPipe } from '@nestjs/common';
 import { BaseResponseDto } from '../../common/dto/base-response.dto';
 
 import { LectureFacadeService } from './service/lecture.facade.service';
@@ -13,7 +13,10 @@ export class LectureController {
      */
     @Get('available/:userId')
     async getAvailableLectures(@Param('userId', ParseIntPipe) userId: number) {
-        const availableLectures = await this.lectureFacadeService.getAvailableLectures(userId, new Date());
+        const availableLectures = await this.lectureFacadeService.getAvailableLectures(
+            userId,
+            new Date(),
+        );
         return new BaseResponseDto(availableLectures, HttpStatus.CREATED.toString());
     }
 }

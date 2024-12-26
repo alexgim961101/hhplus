@@ -20,6 +20,9 @@ importers:
       '@prisma/client':
         specifier: ^6.1.0
         version: 6.1.0(prisma@6.1.0)
+      dotenv-cli:
+        specifier: ^8.0.0
+        version: 8.0.0
       prisma:
         specifier: ^6.1.0
         version: 6.1.0
@@ -60,9 +63,6 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^8.0.0
         version: 8.18.1(eslint@8.57.1)(typescript@5.7.2)
-      dotenv-cli:
-        specifier: ^8.0.0
-        version: 8.0.0
       eslint:
         specifier: ^8.0.0
         version: 8.57.1

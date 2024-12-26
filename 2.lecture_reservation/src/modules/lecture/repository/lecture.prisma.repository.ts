@@ -1,7 +1,7 @@
-import { Lecture } from "@prisma/client";
-import { Inject } from "@nestjs/common";
-import { ILectureRepository } from "./lecture.repository.interface";
-import { PrismaService } from "../../../common/prisma.service";
+import { Lecture } from '@prisma/client';
+import { Inject } from '@nestjs/common';
+import { ILectureRepository } from './lecture.repository.interface';
+import { PrismaService } from '../../../common/prisma.service';
 
 export class LecturePrismaRepository implements ILectureRepository {
     constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}

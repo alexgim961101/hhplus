@@ -1,12 +1,11 @@
-import { Test } from "@nestjs/testing";
+import { Test } from '@nestjs/testing';
 
-import { TestingModule } from "@nestjs/testing";
-import { ReservationController } from "../reservation.controller";
-import { ReservationService } from "../reservation.service";
-import { RESERVATION_REPOSITORY } from "../repository/reservation.repository.interface";
-import { PrismaService } from "../../../common/prisma.service";
-import { ReservationPrismaRepository } from "../repository/reservation.prisma.repository";
-import { BadRequestException } from "@nestjs/common";
+import { TestingModule } from '@nestjs/testing';
+import { ReservationController } from '../reservation.controller';
+import { ReservationService } from '../reservation.service';
+import { RESERVATION_REPOSITORY } from '../repository/reservation.repository.interface';
+import { PrismaService } from '../../../common/prisma.service';
+import { ReservationPrismaRepository } from '../repository/reservation.prisma.repository';
 
 describe('ReservationIntegrationTest', () => {
     let controller: ReservationController;
@@ -15,10 +14,14 @@ describe('ReservationIntegrationTest', () => {
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [ReservationController],
-            providers: [ReservationService, PrismaService, {
-                provide: RESERVATION_REPOSITORY,
-                useClass: ReservationPrismaRepository,
-            }]
+            providers: [
+                ReservationService,
+                PrismaService,
+                {
+                    provide: RESERVATION_REPOSITORY,
+                    useClass: ReservationPrismaRepository,
+                },
+            ],
         }).compile();
 
         controller = module.get<ReservationController>(ReservationController);
@@ -29,7 +32,7 @@ describe('ReservationIntegrationTest', () => {
         await prismaService.$executeRaw`TRUNCATE TABLE reservations`;
         await prismaService.$executeRaw`TRUNCATE TABLE lectures`;
         await prismaService.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`;
-    })
+    });
 
     describe('getReservationListByUserId', () => {
         it('유저 아이디를 기준으로 특강 신청 목록을 조회한다.', async () => {
@@ -62,7 +65,7 @@ describe('ReservationIntegrationTest', () => {
                     userId: 4,
                     lectureId: 4,
                 },
-            ]
+            ];
 
             await prismaService.lecture.createMany({
                 data: mockLectures.map((lecture) => ({
@@ -81,7 +84,7 @@ describe('ReservationIntegrationTest', () => {
 
             // then
             expect(result.data).toHaveLength(2);
-        })
+        });
 
         it('다른 유저의 특강 신청 목록은 조회되지 않는다.', async () => {
             // given
@@ -123,6 +126,6 @@ describe('ReservationIntegrationTest', () => {
             expect(result.data).toHaveLength(1);
             expect(result.data[0].lectureId).toBe(1n);
             expect(result.data[0].userId).toBe(userId);
-        })
-    })
-})
+        });
+    });
+});

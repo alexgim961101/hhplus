@@ -1,7 +1,7 @@
-import { PrismaService } from "../../../common/prisma.service";
-import { ReservationPrismaRepository } from "../repository/reservation.prisma.repository";
-import { Test } from "@nestjs/testing";
-import { TestingModule } from "@nestjs/testing";
+import { PrismaService } from '../../../common/prisma.service';
+import { ReservationPrismaRepository } from '../repository/reservation.prisma.repository';
+import { Test } from '@nestjs/testing';
+import { TestingModule } from '@nestjs/testing';
 
 describe('ReservationPrismaRepository', () => {
     let repository: ReservationPrismaRepository;
@@ -19,7 +19,7 @@ describe('ReservationPrismaRepository', () => {
         await prismaService.$executeRaw`TRUNCATE TABLE reservations`;
         await prismaService.$executeRaw`TRUNCATE TABLE lectures`;
         await prismaService.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`;
-    })
+    });
 
     describe('findByUserId', () => {
         it('유저 아이디로 예약 목록을 조회할 수 있다.', async () => {
@@ -52,7 +52,7 @@ describe('ReservationPrismaRepository', () => {
 
             // then
             expect(result).toHaveLength(2);
-            expect(result.every(r => Number(r.userId) === userId)).toBe(true);
+            expect(result.every((r) => Number(r.userId) === userId)).toBe(true);
         });
 
         it('예약이 없는 경우 빈 배열을 반환한다.', async () => {
@@ -70,12 +70,8 @@ describe('ReservationPrismaRepository', () => {
             // given
             const userId = 1;
             const otherUserId = 2;
-            const mockLectures = [
-                { id: 1, title: 'Lecture 1', maxAttendees: 10, instructorId: 1 },
-            ];
-            const mockReservations = [
-                { id: 1, userId: otherUserId, lectureId: 1 },
-            ];
+            const mockLectures = [{ id: 1, title: 'Lecture 1', maxAttendees: 10, instructorId: 1 }];
+            const mockReservations = [{ id: 1, userId: otherUserId, lectureId: 1 }];
 
             await prismaService.lecture.createMany({
                 data: mockLectures.map((lecture) => ({
@@ -95,5 +91,5 @@ describe('ReservationPrismaRepository', () => {
             // then
             expect(result).toHaveLength(0);
         });
-    })
-})
+    });
+});
