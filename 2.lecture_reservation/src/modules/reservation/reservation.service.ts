@@ -15,4 +15,8 @@ export class ReservationService {
     async getReservationsByUserId(userId: number): Promise<Reservation[]> {
         return this.reservationRepository.findByUserId(userId);
     }
+
+    async createReservation(lectureId: number, userId: number): Promise<Reservation> {
+        return this.reservationRepository.create(lectureId, userId);
+    }
 }

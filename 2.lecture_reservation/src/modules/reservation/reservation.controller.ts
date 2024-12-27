@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
 import { ReservationService } from './reservation.service';
 import { BaseResponseDto } from '../../common/dto/base-response.dto';
 import { PositiveIntPipe } from '../../common/pipe/positive-int.pipe';
@@ -16,6 +16,17 @@ export class ReservationController {
     async getReservationList(@Param('userId', PositiveIntPipe) userId: number) {
         return new BaseResponseDto(
             await this.reservationService.getReservationsByUserId(userId),
+            HttpStatus.OK.toString(),
+        );
+    }
+
+    @Post(':lectureId/:userId')
+    async createReservation(
+        @Param('lectureId', PositiveIntPipe) lectureId: number,
+        @Param('userId', PositiveIntPipe) userId: number,
+    ) {
+        return new BaseResponseDto(
+            await this.reservationService.createReservation(lectureId, userId),
             HttpStatus.OK.toString(),
         );
     }
