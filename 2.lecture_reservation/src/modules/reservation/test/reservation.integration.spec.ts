@@ -299,7 +299,7 @@ describe('ReservationIntegrationTest', () => {
 
         it('동시에 두 번 신청할 경우 하나만 성공해야 한다', async () => {
             // given
-            const userId = 1n;
+            const userId = 1;
             const lecture = await prismaService.lecture.create({
                 data: {
                     title: 'Test Lecture',
@@ -308,45 +308,14 @@ describe('ReservationIntegrationTest', () => {
                     dateTime: new Date(Date.now() + 1000 * 60 * 60 * 24),
                     applicationStart: new Date(Date.now() - 1000 * 60 * 60),
                     applicationEnd: new Date(Date.now() + 1000 * 60 * 60),
+                    isAvailable: true,
                 },
             });
 
             // when
             const results = await Promise.allSettled([
-                controller.createReservation(Number(lecture.id), Number(userId)),
-                controller.createReservation(Number(lecture.id), Number(userId)),
-            ]);
-
-            // then
-            const successCount = results.filter((r) => r.status === 'fulfilled').length;
-            const failureCount = results.filter(
-                (r) => r.status === 'rejected' && r.reason.message === 'Already reserved',
-            ).length;
-
-            expect(successCount).toBe(1);
-            expect(failureCount).toBe(1);
-        });
-
-        it('선착순 1명 남았을 때 동시에 두 번 신청하면 한 번은 성공하고 한 번은 이미 참가자 에러가 발생해야 한다', async () => {
-            // given
-            const lectureId = 1n;
-            const maxAttendees = 1;
-            await prismaService.lecture.create({
-                data: {
-                    id: lectureId,
-                    title: 'Test Lecture',
-                    instructorId: 999n,
-                    maxAttendees,
-                    dateTime: new Date(),
-                    applicationStart: new Date(Date.now() - 1000 * 60 * 60),
-                    applicationEnd: new Date(Date.now() + 1000 * 60 * 60),
-                },
-            });
-
-            // when
-            const results = await Promise.allSettled([
-                controller.createReservation(Number(lectureId), 1),
-                controller.createReservation(Number(lectureId), 1),
+                controller.createReservation(Number(lecture.id), userId),
+                controller.createReservation(Number(lecture.id), userId),
             ]);
 
             // then
@@ -359,26 +328,58 @@ describe('ReservationIntegrationTest', () => {
             expect(alreadyReservedCount).toBe(1);
         });
 
-        it('선착순이 마감일 때 동시에 두 번 신청하면 모두 실패해야 한다', async () => {
+        it('선착순 1명 남았을 때 동시에 두 번 신청하면 한 번은 성공하고 한 번은 이미 참가자 에러가 발생해야 한다', async () => {
             // given
-            const lectureId = 1n;
-            const maxAttendees = 0;
-            await prismaService.lecture.create({
+            const userId = 1;
+            const lecture = await prismaService.lecture.create({
                 data: {
-                    id: lectureId,
                     title: 'Test Lecture',
                     instructorId: 999n,
-                    maxAttendees,
-                    dateTime: new Date(),
+                    maxAttendees: 1,
+                    currentAttendees: 0,
+                    dateTime: new Date(Date.now() + 1000 * 60 * 60 * 24),
                     applicationStart: new Date(Date.now() - 1000 * 60 * 60),
                     applicationEnd: new Date(Date.now() + 1000 * 60 * 60),
+                    isAvailable: true,
                 },
             });
 
             // when
             const results = await Promise.allSettled([
-                controller.createReservation(Number(lectureId), 1),
-                controller.createReservation(Number(lectureId), 1),
+                controller.createReservation(Number(lecture.id), userId),
+                controller.createReservation(Number(lecture.id), userId),
+            ]);
+
+            // then
+            const successCount = results.filter((r) => r.status === 'fulfilled').length;
+            const alreadyReservedCount = results.filter(
+                (r) => r.status === 'rejected' && r.reason.message === 'No available seats',
+            ).length;
+
+            expect(successCount).toBe(1);
+            expect(alreadyReservedCount).toBe(1);
+        });
+
+        it('선착순이 마감일 때 동시에 두 번 신청하면 모두 실패해야 한다', async () => {
+            // given
+            const userId = 1;
+            const lecture = await prismaService.lecture.create({
+                data: {
+                    title: 'Test Lecture',
+                    instructorId: 999n,
+                    maxAttendees: 0,
+                    currentAttendees: 0,
+                    dateTime: new Date(Date.now() + 1000 * 60 * 60 * 24),
+                    applicationStart: new Date(Date.now() - 1000 * 60 * 60),
+                    applicationEnd: new Date(Date.now() + 1000 * 60 * 60),
+                    isAvailable: true,
+                },
+            });
+
+            // when
+            const results = await Promise.allSettled([
+                controller.createReservation(Number(lecture.id), userId),
+                controller.createReservation(Number(lecture.id), userId),
             ]);
 
             // then

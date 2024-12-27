@@ -16,7 +16,6 @@ export class ReservationPrismaRepository implements IReservationRepository {
 
     async create(lectureId: number, userId: number): Promise<Reservation> {
         return await this.prismaService.$transaction(async (tx) => {
-            // SELECT FOR UPDATE로 락 획득
             const lecture = await tx.$queryRaw`
                 SELECT id, maxAttendees, currentAttendees, instructorId, 
                        applicationStart, applicationEnd, isAvailable 
@@ -27,18 +26,6 @@ export class ReservationPrismaRepository implements IReservationRepository {
 
             if (!lecture[0]) {
                 throw new BadRequestException('Lecture not found');
-            }
-
-            // 중복 신청 체크를 가장 먼저 수행
-            const existingReservation = await tx.reservation.findFirst({
-                where: {
-                    lectureId: BigInt(lectureId),
-                    userId: BigInt(userId),
-                },
-            });
-
-            if (existingReservation) {
-                throw new BadRequestException('Already reserved');
             }
 
             const now = new Date();
@@ -62,19 +49,26 @@ export class ReservationPrismaRepository implements IReservationRepository {
                 throw new BadRequestException('No available seats');
             }
 
-            // 현재 수강 인원 증가
-            await tx.lecture.update({
-                where: { id: BigInt(lectureId) },
-                data: { currentAttendees: lecture[0].currentAttendees + 1 },
-            });
+            try {
+                const reservation = await tx.reservation.create({
+                    data: {
+                        lectureId: BigInt(lectureId),
+                        userId: BigInt(userId),
+                    },
+                });
 
-            // 예약 생성
-            return tx.reservation.create({
-                data: {
-                    lectureId: BigInt(lectureId),
-                    userId: BigInt(userId),
-                },
-            });
+                await tx.lecture.update({
+                    where: { id: BigInt(lectureId) },
+                    data: { currentAttendees: lecture[0].currentAttendees + 1 },
+                });
+
+                return reservation;
+            } catch (error) {
+                if (error.code === 'P2002') {
+                    throw new BadRequestException('Already reserved');
+                }
+                throw error;
+            }
         });
     }
 }
