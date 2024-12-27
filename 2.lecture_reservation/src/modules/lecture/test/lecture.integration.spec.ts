@@ -46,6 +46,11 @@ describe('LectureIntegrationSpec', () => {
         await prismaService.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`;
     });
 
+    afterEach(async () => {
+        await prismaService.reservation.deleteMany();
+        await prismaService.lecture.deleteMany();
+    });
+
     describe('getAvailableLectures', () => {
         it('특강 신청 가능 목록 조회 - 오늘 날짜를 포함하는 특강 조회', async () => {
             const userId = 1;
@@ -91,31 +96,31 @@ describe('LectureIntegrationSpec', () => {
 
         it('특강 신청 가능하나 이미 내가 특강에 신청해둔 경우에는 조회 결과에 포함되지 않음', async () => {
             // given
-            const userId = 1;
+            const userId = 1n;
             const mockDate = new Date();
-            const lectures = [
-                {
-                    id: 1n,
-                    instructorId: 1n,
-                    title: 'Available Lecture1',
-                    applicationStart: new Date(mockDate.getTime() - 1000 * 60 * 60 * 24),
-                    applicationEnd: new Date(mockDate.getTime() + 1000 * 60 * 60 * 24),
-                    dateTime: new Date(mockDate.getTime() + 1000 * 60 * 60 * 24),
-                    isAvailable: true,
-                },
-            ];
-            await prismaService.lecture.createMany({
-                data: lectures,
+            const lectureData = {
+                instructorId: 1n,
+                title: 'Available Lecture1',
+                applicationStart: new Date(mockDate.getTime() - 1000 * 60 * 60 * 24),
+                applicationEnd: new Date(mockDate.getTime() + 1000 * 60 * 60 * 24),
+                dateTime: new Date(mockDate.getTime() + 1000 * 60 * 60 * 24),
+                isAvailable: true,
+            };
+
+            // 강의 생성 및 ID 가져오기
+            const createdLecture = await prismaService.lecture.create({
+                data: lectureData,
             });
+
             await prismaService.reservation.create({
                 data: {
                     userId,
-                    lectureId: lectures[0].id,
+                    lectureId: createdLecture.id,
                 },
             });
 
             // when
-            const result = await controller.getAvailableLectures(userId);
+            const result = await controller.getAvailableLectures(Number(userId));
 
             // then
             expect(result.data).toHaveLength(0);

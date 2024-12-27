@@ -24,15 +24,15 @@ describe('ReservationPrismaRepository', () => {
     describe('findByUserId', () => {
         it('유저 아이디로 예약 목록을 조회할 수 있다.', async () => {
             // given
-            const userId = 1;
+            const userId = 1n;
             const mockLectures = [
-                { id: 1, title: 'Lecture 1', maxAttendees: 10, instructorId: 1 },
-                { id: 2, title: 'Lecture 2', maxAttendees: 10, instructorId: 1 },
+                { title: 'Lecture 1', maxAttendees: 10, instructorId: 1n },
+                { title: 'Lecture 2', maxAttendees: 10, instructorId: 1n },
             ];
             const mockReservations = [
-                { id: 1, userId: userId, lectureId: 1 },
-                { id: 2, userId: 2, lectureId: 2 },
-                { id: 3, userId: userId, lectureId: 2 },
+                { userId: userId, lectureId: 1n },
+                { userId: 2n, lectureId: 2n },
+                { userId: userId, lectureId: 2n },
             ];
 
             await prismaService.lecture.createMany({
@@ -48,11 +48,11 @@ describe('ReservationPrismaRepository', () => {
             });
 
             // when
-            const result = await repository.findByUserId(userId);
+            const result = await repository.findByUserId(Number(userId));
 
             // then
             expect(result).toHaveLength(2);
-            expect(result.every((r) => Number(r.userId) === userId)).toBe(true);
+            expect(result.every((r) => Number(r.userId) === Number(userId))).toBe(true);
         });
 
         it('예약이 없는 경우 빈 배열을 반환한다.', async () => {
@@ -68,10 +68,10 @@ describe('ReservationPrismaRepository', () => {
 
         it('다른 유저의 예약은 조회되지 않는다.', async () => {
             // given
-            const userId = 1;
-            const otherUserId = 2;
-            const mockLectures = [{ id: 1, title: 'Lecture 1', maxAttendees: 10, instructorId: 1 }];
-            const mockReservations = [{ id: 1, userId: otherUserId, lectureId: 1 }];
+            const userId = 1n;
+            const otherUserId = 2n;
+            const mockLectures = [{ title: 'Lecture 1', maxAttendees: 10, instructorId: 1 }];
+            const mockReservations = [{ id: 1n, userId: otherUserId, lectureId: 1n }];
 
             await prismaService.lecture.createMany({
                 data: mockLectures.map((lecture) => ({
@@ -86,7 +86,7 @@ describe('ReservationPrismaRepository', () => {
             });
 
             // when
-            const result = await repository.findByUserId(userId);
+            const result = await repository.findByUserId(Number(userId));
 
             // then
             expect(result).toHaveLength(0);
