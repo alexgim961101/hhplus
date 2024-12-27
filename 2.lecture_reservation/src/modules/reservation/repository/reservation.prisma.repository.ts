@@ -29,6 +29,18 @@ export class ReservationPrismaRepository implements IReservationRepository {
                 throw new BadRequestException('Lecture not found');
             }
 
+            // 중복 신청 체크를 가장 먼저 수행
+            const existingReservation = await tx.reservation.findFirst({
+                where: {
+                    lectureId: BigInt(lectureId),
+                    userId: BigInt(userId),
+                },
+            });
+
+            if (existingReservation) {
+                throw new BadRequestException('Already reserved');
+            }
+
             const now = new Date();
             if (now < lecture[0].applicationStart) {
                 throw new BadRequestException('Registration period has not started yet');
@@ -57,17 +69,6 @@ export class ReservationPrismaRepository implements IReservationRepository {
             });
 
             // 예약 생성
-            const existingReservation = await tx.reservation.findFirst({
-                where: {
-                    lectureId: BigInt(lectureId),
-                    userId: BigInt(userId),
-                },
-            });
-
-            if (existingReservation) {
-                throw new BadRequestException('Already reserved');
-            }
-
             return tx.reservation.create({
                 data: {
                     lectureId: BigInt(lectureId),
