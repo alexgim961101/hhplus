@@ -40,5 +40,7 @@ model Reservation {
 
   createdAt DateTime @default(now())
 
+  @@unique([lectureId, userId], name: "unique_lecture_user")
+  @@index([userId])
   @@map("reservations")
 }
